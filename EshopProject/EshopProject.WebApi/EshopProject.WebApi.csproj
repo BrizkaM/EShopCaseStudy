@@ -7,11 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\EShopProject.Business\EShopProject.Entities.csproj" />
+    <ProjectReference Include="..\EShopProject.Services\EShopProject.Services.csproj" />
   </ItemGroup>
 
 </Project>
