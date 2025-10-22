@@ -1,6 +1,7 @@
 ﻿using EShopProject.Entities.Entities;
 using EShopProject.Entities.Interfaces;
 using EShopProject.EShopDB.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace EShopProject.EShopDB.Repositories;
 
@@ -18,7 +19,9 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Products
+            .OrderByDescending(p => p.Idate)
+            .ToListAsync();
     }
 
     public async Task<Product?> GetByIdAsync(int id)
@@ -28,22 +31,40 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product> AddAsync(Product product)
     {
-        throw new NotImplementedException();
+        var entry = await _context.Products.AddAsync(product);
+        return entry.Entity;
     }
 
     public Task UpdateAsync(Product product)
     {
-        throw new NotImplementedException();
+        _context.Products.Update(product);
+        return Task.CompletedTask;
     }
 
     public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var product = await _context.Products.FindAsync(id);
+        if (product != null)
+        {
+            _context.Products.Remove(product);
+        }
     }
 
     public async Task<bool> ExistsAsync(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Products.AnyAsync(p => p.Id == id);
     }
 
+    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize)
+    {
+        var totalCount = await _context.Products.CountAsync();
+
+        var items = await _context.Products
+            .OrderByDescending(p => p.Idate)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
 }

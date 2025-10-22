@@ -102,4 +102,21 @@ public class ProductService : IProductService
         _logger.LogInformation("Stock updated successfully for product ID: {ProductId}", id);
         return true;
     }
+
+    public async Task<(IEnumerable<Product> Items, int TotalCount, int TotalPages)> GetPagedProductsAsync(
+    int pageNumber, int pageSize)
+    {
+        _logger.LogInformation("Retrieving paginated products - Page: {PageNumber}, Size: {PageSize}",
+            pageNumber, pageSize);
+
+        // Business validation
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100; // Max page size
+
+        var (items, totalCount) = await _unitOfWork.Products.GetPagedAsync(pageNumber, pageSize);
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+        return (items, totalCount, totalPages);
+    }
 }

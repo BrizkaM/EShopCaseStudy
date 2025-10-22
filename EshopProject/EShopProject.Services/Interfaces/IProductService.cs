@@ -11,4 +11,7 @@ public interface IProductService
     Task<Product?> GetProductByIdAsync(int id);
     Task<Product> CreateProductAsync(string name, string imageUrl);
     Task<bool> UpdateProductStockAsync(int id, int quantity);
+
+    // V2 with pagination
+    Task<(IEnumerable<Product> Items, int TotalCount, int TotalPages)> GetPagedProductsAsync(int pageNumber, int pageSize);
 }
