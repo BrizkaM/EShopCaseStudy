@@ -34,7 +34,10 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<ProductDto>>), StatusCodes.Status200OK)]
     public async Task<ActionResult<ApiResponse<IEnumerable<ProductDto>>>> GetAllProducts()
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("GET /api/v1/products");
+        var products = await _productService.GetAllProductsAsync();
+        var productDtos = products.Select(MapToDto);
+        return Ok(ApiResponse<IEnumerable<ProductDto>>.SuccessResponse(productDtos));
     }
 
     /// <summary>
@@ -78,7 +81,24 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct(
         [FromBody] CreateProductServiceInput createDto)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("POST /api/v1/products");
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<ProductDto>.ErrorResponse("Invalid input", errors));
+        }
+
+        try
+        {
+            var product = await _productService.CreateProductAsync(createDto.Name, createDto.ImageUrl);
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id },
+                ApiResponse<ProductDto>.SuccessResponse(MapToDto(product)));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponse<ProductDto>.ErrorResponse(ex.Message));
+        }
     }
 
     /// <summary>
@@ -98,7 +118,26 @@ public class ProductsController : ControllerBase
         int id,
         [FromBody] UpdateProductStockServiceInput updateDto)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("PATCH /api/v1/products/{Id}/stock", id);
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.ErrorResponse("Invalid input", errors));
+        }
+
+        try
+        {
+            var success = await _productService.UpdateProductStockAsync(id, updateDto.Quantity);
+            if (!success)
+                return NotFound(ApiResponse<object>.ErrorResponse($"Product with ID {id} not found"));
+
+            return Ok(ApiResponse<object>.SuccessResponse(new { productId = id, quantity = updateDto.Quantity }));
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ApiResponse<object>.ErrorResponse(ex.Message));
+        }
     }
 
     // IDate, UDate properties skipped as they are DB info only
