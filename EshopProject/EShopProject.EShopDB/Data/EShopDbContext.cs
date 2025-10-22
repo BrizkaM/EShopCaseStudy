@@ -1,7 +1,7 @@
-using EShopProject.Business.Entities;
+using EShopProject.Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace EShopProject.Infrastructure.Data;
+namespace EShopProject.EShopDB.Data;
 
 /// <summary>
 /// Database context for E-Shop application

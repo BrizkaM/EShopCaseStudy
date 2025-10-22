@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EShopProject.Business.Entities;
+namespace EShopProject.Entities.Entities;
 
 /// <summary>
 /// Product entity representing an e-shop product

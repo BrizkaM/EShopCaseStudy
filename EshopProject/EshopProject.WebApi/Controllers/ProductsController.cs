@@ -1,5 +1,6 @@
-﻿using EShopProject.Business.Entities;
+﻿using EShopProject.Entities.Entities;
 using EShopProject.Services;
+using EShopProject.Services.Interfaces;
 using EShopProject.Services.ServiceInputs;
 using EShopProject.Services.ServiceOutputs;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,15 @@ namespace EShopProject.WebApi.Controllers.V1;
 [Produces("application/json")]
 public class ProductsController : ControllerBase
 {
+    private readonly IProductService _productService;
+    private readonly ILogger<ProductsController> _logger;
+
+    public ProductsController(IProductService productService, ILogger<ProductsController> logger)
+    {
+        _productService = productService;
+        _logger = logger;
+    }
+
     /// <summary>
     /// Get all products
     /// </summary>
@@ -39,7 +49,20 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<ProductDto>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ApiResponse<ProductDto>>> GetProductById(int id)
     {
-        throw new NotImplementedException();
+        // this is version v1 endpoint
+        _logger.LogInformation("GET /api/v1/products/{Id} - Retrieving product", id);
+
+        var product = await _productService.GetProductByIdAsync(id);
+
+        if (product == null)
+        {
+            _logger.LogWarning("Product with ID {Id} not found", id);
+            return NotFound(ApiResponse<ProductDto>.ErrorResponse($"Product with ID {id} not found"));
+        }
+
+        return Ok(ApiResponse<ProductDto>.SuccessResponse(
+            MapToDto(product),
+            "Product retrieved successfully"));
     }
 
     /// <summary>
