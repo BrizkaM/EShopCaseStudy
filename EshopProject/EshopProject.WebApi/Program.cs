@@ -16,9 +16,9 @@ builder.Services.AddControllers();
 
 // Database configuration - SQLite
 builder.Services.AddDbContext<EShopDbContext>(options =>
-    options.UseSqlite(
+    options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        b => b.MigrationsAssembly("EShopApi.WebApi")));
+        b => b.MigrationsAssembly("EShopProject.EShopDB")));
 
 // Repository
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
