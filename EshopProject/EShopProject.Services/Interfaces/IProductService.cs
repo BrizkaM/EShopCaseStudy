@@ -1,4 +1,7 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: IProductService.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 
 namespace EShopProject.Services.Interfaces;
 
@@ -12,6 +15,5 @@ public interface IProductService
     Task<Product> CreateProductAsync(string name, string imageUrl);
     Task<bool> UpdateProductStockAsync(int id, int quantity);
 
-    // V2 with pagination
     Task<(IEnumerable<Product> Items, int TotalCount, int TotalPages)> GetPagedProductsAsync(int pageNumber, int pageSize);
 }

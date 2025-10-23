@@ -1,4 +1,7 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: ProductsController.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 using EShopProject.Services;
 using EShopProject.Services.Interfaces;
 using EShopProject.Services.ServiceInputs;

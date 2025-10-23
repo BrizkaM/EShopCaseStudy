@@ -1,10 +1,12 @@
+//------------------------------------------------------------------------------------------
+// File: Program.cs
+//------------------------------------------------------------------------------------------
 using EShopApi.WebApi.Handlers;
 using EShopProject.Core.Interfaces;
 using EShopProject.EShopDB.Data;
 using EShopProject.EShopDB.Repositories;
 using EShopProject.MessageQueue;
 using EShopProject.MessageQueue.Interfaces;
-using EShopProject.Services;
 using EShopProject.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

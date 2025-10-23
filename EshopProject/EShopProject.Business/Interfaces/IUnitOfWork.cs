@@ -1,4 +1,7 @@
-﻿namespace EShopProject.Core.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: IUnitOfWork.cs
+//------------------------------------------------------------------------------------------
+namespace EShopProject.Core.Interfaces;
 
 /// <summary>
 /// Unit of Work pattern for managing database transactions

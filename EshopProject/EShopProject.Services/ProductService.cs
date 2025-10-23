@@ -1,9 +1,10 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: ProductsControllerV1Tests.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 using EShopProject.Core.Interfaces;
 using EShopProject.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-
-namespace EShopProject.Services;
 
 /// <summary>
 /// Service for product business logic
@@ -13,18 +14,33 @@ public class ProductService : IProductService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<ProductService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the ProductService class.
+    /// </summary>
+    /// <param name="unitOfWork">The unit of work instance for handling database transactions.</param>
+    /// <param name="logger">The logger instance for logging service operations.</param>
+    /// <exception cref="ArgumentNullException">Thrown when unitOfWork or logger is null.</exception>
     public ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logger)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
+    /// <summary>
+    /// Retrieves all products from the database asynchronously.
+    /// </summary>
+    /// <returns>A collection of all products.</returns>
     public async Task<IEnumerable<Product>> GetAllProductsAsync()
     {
         _logger.LogInformation("Retrieving all products");
         return await _unitOfWork.Products.GetAllAsync();
     }
 
+    /// <summary>
+    /// Retrieves a product by its unique identifier asynchronously.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product.</param>
+    /// <returns>The product if found; otherwise, null.</returns>
     public async Task<Product?> GetProductByIdAsync(int id)
     {
         _logger.LogInformation("Retrieving product with ID: {ProductId}", id);
@@ -38,6 +54,13 @@ public class ProductService : IProductService
         return await _unitOfWork.Products.GetByIdAsync(id);
     }
 
+    /// <summary>
+    /// Creates a new product asynchronously.
+    /// </summary>
+    /// <param name="name">The name of the product.</param>
+    /// <param name="imageUrl">The URL of the product's image.</param>
+    /// <returns>The created product.</returns>
+    /// <exception cref="ArgumentException">Thrown when name or imageUrl is empty or whitespace.</exception>
     public async Task<Product> CreateProductAsync(string name, string imageUrl)
     {
         _logger.LogInformation("Creating new product: {ProductName}", name);
@@ -67,6 +90,13 @@ public class ProductService : IProductService
         return createdProduct;
     }
 
+    /// <summary>
+    /// Updates the stock quantity of a product asynchronously.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product.</param>
+    /// <param name="quantity">The new quantity to set.</param>
+    /// <returns>True if the update was successful; otherwise, false.</returns>
+    /// <exception cref="ArgumentException">Thrown when quantity is negative.</exception>
     public async Task<bool> UpdateProductStockAsync(int id, int quantity)
     {
         _logger.LogInformation("Updating stock for product ID: {ProductId} to quantity: {Quantity}", id, quantity);
@@ -103,6 +133,12 @@ public class ProductService : IProductService
         return true;
     }
 
+    /// <summary>
+    /// Retrieves a paginated list of products asynchronously.
+    /// </summary>
+    /// <param name="pageNumber">The page number to retrieve (1-based).</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <returns>A tuple containing the items, total count, and total pages.</returns>
     public async Task<(IEnumerable<Product> Items, int TotalCount, int TotalPages)> GetPagedProductsAsync(
     int pageNumber, int pageSize)
     {

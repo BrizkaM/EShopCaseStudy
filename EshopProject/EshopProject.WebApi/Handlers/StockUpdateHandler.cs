@@ -1,4 +1,7 @@
-﻿using EShopProject.MessageQueue.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: StockUpdateHandler.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.MessageQueue.Interfaces;
 using EShopProject.Services.Interfaces;
 
 namespace EShopApi.WebApi.Handlers;

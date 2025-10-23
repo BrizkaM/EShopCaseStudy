@@ -1,4 +1,7 @@
-﻿namespace EShopProject.MessageQueue.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: IStockUpdateHandler.cs
+//------------------------------------------------------------------------------------------
+namespace EShopProject.MessageQueue.Interfaces;
 
 /// <summary>
 /// Interface for handling stock updates

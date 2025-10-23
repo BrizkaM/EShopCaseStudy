@@ -1,4 +1,7 @@
-﻿namespace EShopProject.MessageQueue.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: IStockUpdateQueue.cs
+//------------------------------------------------------------------------------------------
+namespace EShopProject.MessageQueue.Interfaces;
 
 /// <summary>
 /// Interface for asynchronous stock update queue

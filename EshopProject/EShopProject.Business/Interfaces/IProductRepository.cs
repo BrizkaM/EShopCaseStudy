@@ -1,4 +1,7 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: IProductRepository.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 
 namespace EShopProject.Core.Interfaces;
 

@@ -1,4 +1,7 @@
-﻿using EShopProject.MessageQueue.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: StockUpdateQueueProcessor.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.MessageQueue.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -6,9 +9,13 @@ using Microsoft.Extensions.Logging;
 namespace EShopProject.MessageQueue;
 
 /// <summary>
-/// Background service that processes stock update queue
-/// Runs every 2 seconds to process pending requests
+/// Background service that processes stock updates from a queue.
+/// Runs continuously at configurable intervals (default 2 seconds) to handle pending stock update requests.
 /// </summary>
+/// <remarks>
+/// This service implements <see cref="BackgroundService"/> to run as a long-running service.
+/// It processes stock updates in a fault-tolerant way, logging errors without crashing the service.
+/// </remarks>
 public class StockUpdateQueueProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
@@ -16,6 +23,14 @@ public class StockUpdateQueueProcessor : BackgroundService
     private readonly ILogger<StockUpdateQueueProcessor> _logger;
     private readonly TimeSpan _processingInterval;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StockUpdateQueueProcessor"/> class.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider for dependency injection.</param>
+    /// <param name="queue">The queue interface for processing stock updates.</param>
+    /// <param name="logger">The logger instance for this processor.</param>
+    /// <param name="processingInterval">Optional interval between processing cycles. Defaults to 2 seconds if not specified.</param>
+    /// <exception cref="ArgumentNullException">Thrown when any required dependency is null.</exception>
     public StockUpdateQueueProcessor(
         IServiceProvider serviceProvider,
         IStockUpdateQueue queue,
@@ -28,6 +43,11 @@ public class StockUpdateQueueProcessor : BackgroundService
         _processingInterval = processingInterval ?? TimeSpan.FromSeconds(2);
     }
 
+    /// <summary>
+    /// Executes the background processing loop for stock updates.
+    /// </summary>
+    /// <param name="stoppingToken">Cancellation token used to signal when the service should stop.</param>
+    /// <returns>A task representing the background processing operation.</returns>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Stock Update Queue Processor started");
@@ -49,6 +69,15 @@ public class StockUpdateQueueProcessor : BackgroundService
         _logger.LogInformation("Stock Update Queue Processor stopped");
     }
 
+    /// <summary>
+    /// Processes all pending items in the stock update queue.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token to stop processing.</param>
+    /// <returns>A task representing the queue processing operation.</returns>
+    /// <remarks>
+    /// Creates a new service scope for each processing cycle and attempts to handle each queued item.
+    /// Failed updates are logged but don't prevent processing of subsequent items.
+    /// </remarks>
     private async Task ProcessQueueAsync(CancellationToken cancellationToken)
     {
         if (_queue.Count == 0)

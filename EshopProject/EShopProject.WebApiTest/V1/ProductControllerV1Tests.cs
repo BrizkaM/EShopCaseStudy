@@ -1,4 +1,7 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: ProductsControllerV1Tests.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 using EShopProject.Services;
 using EShopProject.Services.Interfaces;
 using EShopProject.Services.ServiceInputs;
@@ -28,8 +31,11 @@ public class ProductsControllerV1Tests
         _controller = new ProductsController(_mockProductService.Object, _mockLogger.Object);
     }
 
+    /// <summary>
+    /// Tests that GetAllProducts returns OK result with correct product list when products exist
+    /// </summary>
     [TestMethod]
-    public async Task GetAllProducts_WithProducts_ReturnsOkResult()
+    public async Task ProductsController_GetAllProducts_WithProducts_ReturnsOkResult()
     {
         // Arrange
         var products = GetTestProducts();
@@ -48,8 +54,11 @@ public class ProductsControllerV1Tests
         Assert.AreEqual(3, response.Data!.Count());
     }
 
-    [TestMethod]
-    public async Task GetProductById_ExistingId_ReturnsOkResult()
+    /// <summary>
+    /// Tests that GetProductById returns OK result with correct product when ID exists
+    /// </summary>
+    [TestMethod] 
+    public async Task ProductsController_GetProductById_ExistingId_ReturnsOkResult()
     {
         // Arrange
         var product = GetTestProducts().First();
@@ -68,8 +77,11 @@ public class ProductsControllerV1Tests
         Assert.AreEqual("Test Product 1", response.Data!.Name);
     }
 
+    /// <summary>
+    /// Tests that GetProductById returns NotFound when product ID does not exist
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_NonExistingId_ReturnsNotFound()
+    public async Task ProductsController_GetProductById_NonExistingId_ReturnsNotFound()
     {
         // Arrange
         _mockProductService.Setup(s => s.GetProductByIdAsync(999))
@@ -86,8 +98,11 @@ public class ProductsControllerV1Tests
         Assert.IsFalse(response.Success);
     }
 
+    /// <summary>
+    /// Tests that CreateProduct returns Created result with correct product data when input is valid
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_ValidInput_ReturnsCreatedResult()
+    public async Task ProductsController_CreateProduct_ValidInput_ReturnsCreatedResult()
     {
         // Arrange
         var input = new CreateProductServiceInput
@@ -120,8 +135,11 @@ public class ProductsControllerV1Tests
         Assert.AreEqual("New Product", response.Data!.Name);
     }
 
+    /// <summary>
+    /// Tests that UpdateProductStock returns OK result when stock update is successful
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_ValidInput_ReturnsOkResult()
+    public async Task ProductsController_UpdateProductStock_ValidInput_ReturnsOkResult()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 50 };
@@ -139,8 +157,11 @@ public class ProductsControllerV1Tests
         Assert.IsTrue(response.Success);
     }
 
+    /// <summary>
+    /// Tests that UpdateProductStock returns NotFound when product does not exist
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_NonExistingProduct_ReturnsNotFound()
+    public async Task ProductsController_UpdateProductStock_NonExistingProduct_ReturnsNotFound()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 50 };
@@ -158,8 +179,11 @@ public class ProductsControllerV1Tests
         Assert.IsFalse(response.Success);
     }
 
+    /// <summary>
+    /// Tests that UpdateProductStock returns BadRequest when quantity is negative
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_NegativeQuantity_ThrowsArgumentException()
+    public async Task ProductsController_UpdateProductStock_NegativeQuantity_ThrowsArgumentException()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = -10 };

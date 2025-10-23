@@ -1,4 +1,7 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: ProductsControllerV2Tests.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 using EShopProject.MessageQueue;
 using EShopProject.MessageQueue.Interfaces;
 using EShopProject.Services;
@@ -35,8 +38,11 @@ public class ProductsControllerV2Tests
             _mockLogger.Object);
     }
 
+    /// <summary>
+    /// Tests GetProducts endpoint with pagination parameters, verifying correct page size and content
+    /// </summary>
     [TestMethod]
-    public async Task GetProducts_WithPagination_ReturnsOkResult()
+    public async Task ProductsController_GetProducts_WithPagination_ReturnsOkResult()
     {
         // Arrange
         var products = GetTestProducts();
@@ -57,8 +63,11 @@ public class ProductsControllerV2Tests
         Assert.AreEqual(3, response.Data.TotalPages);
     }
 
+    /// <summary>
+    /// Tests GetProducts endpoint with default pagination values when no parameters are provided
+    /// </summary>
     [TestMethod]
-    public async Task GetProducts_DefaultPagination_UsesDefaultValues()
+    public async Task ProductsController_GetProducts_DefaultPagination_UsesDefaultValues()
     {
         // Arrange
         var products = GetTestProducts();
@@ -78,8 +87,11 @@ public class ProductsControllerV2Tests
         Assert.AreEqual(10, response.Data.PageSize);
     }
 
+    /// <summary>
+    /// Tests GetProducts endpoint with custom page size parameter, verifying correct pagination settings
+    /// </summary>
     [TestMethod]
-    public async Task GetProducts_CustomPageSize_ReturnsCorrectPageSize()
+    public async Task ProductsController_GetProducts_CustomPageSize_ReturnsCorrectPageSize()
     {
         // Arrange
         var products = GetTestProducts();
@@ -98,8 +110,11 @@ public class ProductsControllerV2Tests
         Assert.AreEqual(5, response.Data.PageSize);
     }
 
+    /// <summary>
+    /// Tests GetProductById endpoint with an existing product ID, expecting successful retrieval
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_ExistingId_ReturnsOkResult()
+    public async Task ProductsController_GetProductById_ExistingId_ReturnsOkResult()
     {
         // Arrange
         var product = GetTestProducts().First();
@@ -118,8 +133,11 @@ public class ProductsControllerV2Tests
         Assert.AreEqual("Test Product 1", response.Data!.Name);
     }
 
+    /// <summary>
+    /// Tests GetProductById endpoint with a non-existing ID, expecting NotFound response
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_NonExistingId_ReturnsNotFound()
+    public async Task ProductsController_GetProductById_NonExistingId_ReturnsNotFound()
     {
         // Arrange
         _mockProductService.Setup(s => s.GetProductByIdAsync(999))
@@ -136,8 +154,11 @@ public class ProductsControllerV2Tests
         Assert.IsFalse(response.Success);
     }
 
+    /// <summary>
+    /// Tests CreateProduct endpoint with valid input data, expecting successful creation
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_ValidInput_ReturnsCreatedResult()
+    public async Task ProductsController_CreateProduct_ValidInput_ReturnsCreatedResult()
     {
         // Arrange
         var input = new CreateProductServiceInput
@@ -171,8 +192,11 @@ public class ProductsControllerV2Tests
         Assert.AreEqual("New Product V2", response.Data!.Name);
     }
 
+    /// <summary>
+    /// Tests UpdateProductStock endpoint with valid input, verifying queue processing
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_ValidInput_ReturnsAcceptedResult()
+    public async Task ProductsController_UpdateProductStock_ValidInput_ReturnsAcceptedResult()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 50 };
@@ -196,8 +220,11 @@ public class ProductsControllerV2Tests
             r => r.ProductId == 1 && r.Quantity == 50)), Times.Once);
     }
 
+    /// <summary>
+    /// Tests UpdateProductStock endpoint, verifying correct request data is enqueued
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_EnqueuesCorrectRequest()
+    public async Task ProductsController_UpdateProductStock_EnqueuesCorrectRequest()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 75 };
@@ -217,8 +244,11 @@ public class ProductsControllerV2Tests
         Assert.IsLessThan(2, (DateTime.UtcNow - capturedRequest.RequestedAt).TotalSeconds);
     }
 
+    /// <summary>
+    /// Tests UpdateProductStock endpoint, verifying queue position is returned in response
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_ReturnsQueuePosition()
+    public async Task ProductsController_UpdateProductStock_ReturnsQueuePosition()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 100 };
@@ -240,8 +270,11 @@ public class ProductsControllerV2Tests
         Assert.Contains("queuePosition", data);
     }
 
+    /// <summary>
+    /// Tests UpdateProductStock endpoint with queue exception, expecting BadRequest response
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_QueueException_ReturnsBadRequest()
+    public async Task ProductsController_UpdateProductStock_QueueException_ReturnsBadRequest()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 50 };
@@ -259,8 +292,11 @@ public class ProductsControllerV2Tests
         Assert.IsFalse(response.Success);
     }
 
+    /// <summary>
+    /// Tests UpdateProductStock endpoint with invalid model state, expecting BadRequest response
+    /// </summary>
     [TestMethod]
-    public async Task UpdateProductStock_InvalidModelState_ReturnsBadRequest()
+    public async Task ProductsController_UpdateProductStock_InvalidModelState_ReturnsBadRequest()
     {
         // Arrange
         var input = new UpdateProductStockServiceInput { Quantity = 50 };
@@ -274,8 +310,11 @@ public class ProductsControllerV2Tests
         Assert.IsNotNull(badRequestResult);
     }
 
+    /// <summary>
+    /// Tests GetProducts endpoint pagination metadata accuracy
+    /// </summary>
     [TestMethod]
-    public async Task GetProducts_PaginationMetadata_IsCorrect()
+    public async Task ProductsController_GetProducts_PaginationMetadata_IsCorrect()
     {
         // Arrange
         var products = GetTestProducts();
@@ -299,8 +338,11 @@ public class ProductsControllerV2Tests
         Assert.IsTrue(response.Data.HasNextPage);
     }
 
+    /// <summary>
+    /// Tests GetProducts endpoint first page navigation properties
+    /// </summary>
     [TestMethod]
-    public async Task GetProducts_FirstPage_HasNoPreviousPage()
+    public async Task ProductsController_GetProducts_FirstPage_HasNoPreviousPage()
     {
         // Arrange
         var products = GetTestProducts();
@@ -318,8 +360,11 @@ public class ProductsControllerV2Tests
         Assert.IsTrue(response.Data.HasNextPage);
     }
 
+    /// <summary>
+    /// Tests GetProducts endpoint last page navigation properties
+    /// </summary>
     [TestMethod]
-    public async Task GetProducts_LastPage_HasNoNextPage()
+    public async Task ProductsController_GetProducts_LastPage_HasNoNextPage()
     {
         // Arrange
         var products = GetTestProducts();
@@ -337,8 +382,11 @@ public class ProductsControllerV2Tests
         Assert.IsFalse(response.Data.HasNextPage);
     }
 
+    /// <summary>
+    /// Tests CreateProduct endpoint with invalid model state, expecting BadRequest response
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_InvalidModelState_ReturnsBadRequest()
+    public async Task ProductsController_CreateProduct_InvalidModelState_ReturnsBadRequest()
     {
         // Arrange
         var input = new CreateProductServiceInput
@@ -361,8 +409,11 @@ public class ProductsControllerV2Tests
         Assert.IsNotEmpty(response.Errors);
     }
 
+    /// <summary>
+    /// Tests CreateProduct endpoint handling service exceptions, expecting BadRequest response
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_ServiceThrowsException_ReturnsBadRequest()
+    public async Task ProductsController_CreateProduct_ServiceThrowsException_ReturnsBadRequest()
     {
         // Arrange
         var input = new CreateProductServiceInput

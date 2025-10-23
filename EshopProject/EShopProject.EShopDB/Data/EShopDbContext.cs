@@ -1,3 +1,6 @@
+//------------------------------------------------------------------------------------------
+// File: EShopDbContext.cs
+//------------------------------------------------------------------------------------------
 using EShopProject.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,12 +11,23 @@ namespace EShopProject.EShopDB.Data;
 /// </summary>
 public class EShopDbContext : DbContext
 {
+    /// <summary>
+    /// Initializes a new instance of the EShopDbContext class.
+    /// </summary>
+    /// <param name="options">The options to be used by this DbContext.</param>
     public EShopDbContext(DbContextOptions<EShopDbContext> options) : base(options)
     {
     }
 
+    /// <summary>
+    /// Gets or sets the products database set.
+    /// </summary>
     public DbSet<Product> Products { get; set; } = null!;
 
+    /// <summary>
+    /// Configures the model and relationships for the e-shop database.
+    /// </summary>
+    /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -48,6 +62,10 @@ public class EShopDbContext : DbContext
         SeedData(modelBuilder);
     }
 
+    /// <summary>
+    /// Seeds the initial product data into the database.
+    /// </summary>
+    /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
     private void SeedData(ModelBuilder modelBuilder)
     {
         var products = new[]

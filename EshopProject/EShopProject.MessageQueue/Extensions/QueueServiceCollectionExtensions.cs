@@ -1,4 +1,7 @@
-﻿using EShopProject.MessageQueue.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: QueueServiceCollectionExtensions.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.MessageQueue.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

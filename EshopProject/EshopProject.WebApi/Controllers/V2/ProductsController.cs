@@ -1,4 +1,7 @@
-﻿using EShopProject.Core.Entities;
+﻿//------------------------------------------------------------------------------------------
+// File: ProductsController.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Entities;
 using EShopProject.MessageQueue;
 using EShopProject.MessageQueue.Interfaces;
 using EShopProject.Services;
@@ -154,6 +157,7 @@ public class ProductsController : ControllerBase
         }
     }
 
+    // IDate, UDate properties skipped as they are DB info only
     private static ProductDto MapToDto(Product product) => new()
     {
         Id = product.Id,

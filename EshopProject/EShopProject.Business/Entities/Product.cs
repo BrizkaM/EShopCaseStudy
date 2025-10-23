@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿//------------------------------------------------------------------------------------------
+// File: Product.cs
+//------------------------------------------------------------------------------------------
+using System.ComponentModel.DataAnnotations;
 
 namespace EShopProject.Core.Entities;
 

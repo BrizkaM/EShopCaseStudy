@@ -1,8 +1,10 @@
-﻿using EShopProject.Core.Interfaces;
+﻿//------------------------------------------------------------------------------------------
+// File: ProductServiceIntegrationTests.cs
+//------------------------------------------------------------------------------------------
+using EShopProject.Core.Interfaces;
 using EShopProject.Core.Entities;
 using EShopProject.EShopDB.Data;
 using EShopProject.EShopDB.Repositories;
-using EShopProject.Services;
 using EShopProject.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,6 +23,9 @@ public class ProductServiceIntegrationTests
     private IUnitOfWork _unitOfWork = null!;
     private Mock<ILogger<ProductService>> _mockLogger = null!;
 
+    /// <summary>
+    /// Sets up the test environment before each test with an in-memory database and sample data.
+    /// </summary>
     [TestInitialize]
     public void TestInitialize()
     {
@@ -38,6 +43,9 @@ public class ProductServiceIntegrationTests
         SeedTestData();
     }
 
+    /// <summary>
+    /// Cleans up the test database after each test to ensure isolation.
+    /// </summary>
     [TestCleanup]
     public void TestCleanup()
     {
@@ -45,8 +53,11 @@ public class ProductServiceIntegrationTests
         _context.Dispose();
     }
 
+    /// <summary>
+    /// Verifies that GetAllProducts returns all 5 seeded products from the database.
+    /// </summary>
     [TestMethod]
-    public async Task GetAllProducts_ReturnsAllProducts()
+    public async Task ProductService_GetAllProducts_ReturnsAllProducts()
     {
         // Act
         var result = await _productService.GetAllProductsAsync();
@@ -58,8 +69,11 @@ public class ProductServiceIntegrationTests
         Assert.IsTrue(products.Any(p => p.Name == "Test Product 2"));
     }
 
+    /// <summary>
+    /// Verifies that GetAllProducts returns products sorted by creation date (newest first).
+    /// </summary>
     [TestMethod]
-    public async Task GetAllProducts_ReturnsProductsOrderedByCreatedAtDescending()
+    public async Task ProductService_GetAllProducts_ReturnsProductsOrderedByCreatedAtDescending()
     {
         // Act
         var result = await _productService.GetAllProductsAsync();
@@ -70,8 +84,11 @@ public class ProductServiceIntegrationTests
         Assert.IsTrue(products[1].Idate >= products[2].Idate);
     }
 
+    /// <summary>
+    /// Verifies that GetAllProducts returns an empty list when the database contains no products.
+    /// </summary>
     [TestMethod]
-    public async Task GetAllProducts_EmptyDatabase_ReturnsEmptyList()
+    public async Task ProductService_GetAllProducts_EmptyDatabase_ReturnsEmptyList()
     {
         // Arrange
         var options = new DbContextOptionsBuilder<EShopDbContext>()
@@ -88,8 +105,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(0, result.Count());
     }
 
+    /// <summary>
+    /// Verifies that GetProductById successfully retrieves a product when given a valid ID.
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_ExistingId_ReturnsProduct()
+    public async Task ProductService_GetProductById_ExistingId_ReturnsProduct()
     {
         // Arrange
         var existingProduct = await _context.Products.FirstAsync();
@@ -104,8 +124,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(existingProduct.ImageUrl, result.ImageUrl);
     }
 
+    /// <summary>
+    /// Verifies that GetProductById returns null when the product ID doesn't exist in the database.
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_NonExistingId_ReturnsNull()
+    public async Task ProductService_GetProductById_NonExistingId_ReturnsNull()
     {
         // Act
         var result = await _productService.GetProductByIdAsync(999);
@@ -114,8 +137,11 @@ public class ProductServiceIntegrationTests
         Assert.IsNull(result);
     }
 
+    /// <summary>
+    /// Verifies that GetProductById returns null when given an invalid ID (0).
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_InvalidId_ReturnsNull()
+    public async Task ProductService_GetProductById_InvalidId_ReturnsNull()
     {
         // Act
         var result = await _productService.GetProductByIdAsync(0);
@@ -124,8 +150,11 @@ public class ProductServiceIntegrationTests
         Assert.IsNull(result);
     }
 
+    /// <summary>
+    /// Verifies that GetProductById returns null when given a negative ID.
+    /// </summary>
     [TestMethod]
-    public async Task GetProductById_NegativeId_ReturnsNull()
+    public async Task ProductService_GetProductById_NegativeId_ReturnsNull()
     {
         // Act
         var result = await _productService.GetProductByIdAsync(-1);
@@ -134,8 +163,11 @@ public class ProductServiceIntegrationTests
         Assert.IsNull(result);
     }
 
+    /// <summary>
+    /// Verifies that CreateProduct successfully creates a new product with valid name and image URL.
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_ValidInput_CreatesProduct()
+    public async Task ProductService_CreateProduct_ValidInput_CreatesProduct()
     {
         // Arrange
         var name = "New Test Product";
@@ -159,8 +191,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(name, dbProduct.Name);
     }
 
+    /// <summary>
+    /// Verifies that CreateProduct creates a product with default values when only required fields are provided.
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_MinimalInput_CreatesProductWithDefaults()
+    public async Task ProductService_CreateProduct_MinimalInput_CreatesProductWithDefaults()
     {
         // Arrange
         var name = "Minimal Product";
@@ -176,11 +211,14 @@ public class ProductServiceIntegrationTests
         Assert.IsNull(result.Description);
     }
 
+    /// <summary>
+    /// Verifies that CreateProduct throws an exception when the product name is empty, null, or whitespace.
+    /// </summary>
     [TestMethod]
     [DataRow("", "https://example.com/image.jpg")]
     [DataRow(null, "https://example.com/image.jpg")]
     [DataRow("   ", "https://example.com/image.jpg")]
-    public async Task CreateProduct_EmptyName_ThrowsArgumentException(string name, string imageUrl)
+    public async Task ProductService_CreateProduct_EmptyName_ThrowsArgumentException(string name, string imageUrl)
     {
         // Act & Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -189,11 +227,14 @@ public class ProductServiceIntegrationTests
         Assert.Contains("name", exception.Message.ToLower());
     }
 
+    /// <summary>
+    /// Verifies that CreateProduct throws an exception when the image URL is empty, null, or whitespace.
+    /// </summary>
     [TestMethod]
     [DataRow("Product Name", "")]
     [DataRow("Product Name", null)]
     [DataRow("Product Name", "   ")]
-    public async Task CreateProduct_EmptyImageUrl_ThrowsArgumentException(string name, string imageUrl)
+    public async Task ProductService_CreateProduct_EmptyImageUrl_ThrowsArgumentException(string name, string imageUrl)
     {
         // Act & Assert
         var exception = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -202,8 +243,11 @@ public class ProductServiceIntegrationTests
         Assert.Contains("image", exception.Message.ToLower());
     }
 
+    /// <summary>
+    /// Verifies that CreateProduct automatically trims whitespace from product name and image URL.
+    /// </summary>
     [TestMethod]
-    public async Task CreateProduct_TrimsWhitespace()
+    public async Task ProductService_CreateProduct_TrimsWhitespace()
     {
         // Arrange
         var name = "  Product With Spaces  ";
@@ -217,8 +261,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual("https://example.com/image.jpg", result.ImageUrl);
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts returns the correct first page of products with proper pagination info.
+    /// </summary>
     [TestMethod]
-    public async Task GetPagedProducts_FirstPage_ReturnsCorrectItems()
+    public async Task ProductService_GetPagedProducts_FirstPage_ReturnsCorrectItems()
     {
         // Act
         var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(1, 2);
@@ -227,11 +274,14 @@ public class ProductServiceIntegrationTests
         var itemsList = items.ToList();
         Assert.HasCount(2, itemsList);
         Assert.AreEqual(5, totalCount);
-        Assert.AreEqual(3, totalPages); // 5 items / 2 per page = 3 pages
+        Assert.AreEqual(3, totalPages);
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts returns the correct second page of products.
+    /// </summary>
     [TestMethod]
-    public async Task GetPagedProducts_SecondPage_ReturnsCorrectItems()
+    public async Task ProductService_GetPagedProducts_SecondPage_ReturnsCorrectItems()
     {
         // Act
         var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(2, 2);
@@ -243,8 +293,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(3, totalPages);
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts returns only the remaining items on the last page.
+    /// </summary>
     [TestMethod]
-    public async Task GetPagedProducts_LastPage_ReturnsRemainingItems()
+    public async Task ProductService_GetPagedProducts_LastPage_ReturnsRemainingItems()
     {
         // Act
         var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(3, 2);
@@ -256,8 +309,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(3, totalPages);
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts returns 10 items per page when using the default page size.
+    /// </summary>
     [TestMethod]
-    public async Task GetPagedProducts_DefaultPageSize_Returns10Items()
+    public async Task ProductService_GetPagedProducts_DefaultPageSize_Returns10Items()
     {
         // Arrange - Add more products to test default page size
         for (int i = 6; i <= 15; i++)
@@ -280,10 +336,13 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(2, totalPages);
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts automatically corrects invalid page numbers (0 or negative) to page 1.
+    /// </summary>
     [TestMethod]
     [DataRow(0, 10, 1, DisplayName = "Invalid page -> corrected to 1")]
     [DataRow(-1, 10, 1, DisplayName = "Negative page -> corrected to 1")]
-    public async Task GetPagedProducts_InvalidPageNumber_UsesPageOne(int inputPage, int pageSize, int expectedPage)
+    public async Task ProductService_GetPagedProducts_InvalidPageNumber_UsesPageOne(int inputPage, int pageSize, int expectedPage)
     {
         // Act
         var (items, _, _) = await _productService.GetPagedProductsAsync(inputPage, pageSize);
@@ -292,11 +351,14 @@ public class ProductServiceIntegrationTests
         Assert.IsTrue(items.Any()); // Should return first page results
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts corrects invalid page sizes (0, negative, or too large) to valid defaults.
+    /// </summary>
     [TestMethod]
     [DataRow(1, 0, 10, DisplayName = "Invalid size -> corrected to 10")]
     [DataRow(1, -5, 10, DisplayName = "Negative size -> corrected to 10")]
     [DataRow(1, 200, 100, DisplayName = "Too large -> capped at 100")]
-    public async Task GetPagedProducts_InvalidPageSize_UsesDefault(int pageNumber, int inputSize, int expectedMinSize)
+    public async Task ProductService_GetPagedProducts_InvalidPageSize_UsesDefault(int pageNumber, int inputSize, int expectedMinSize)
     {
         // Act
         var (items, _, _) = await _productService.GetPagedProductsAsync(pageNumber, inputSize);
@@ -306,8 +368,11 @@ public class ProductServiceIntegrationTests
         Assert.IsTrue(itemsList.Count <= expectedMinSize || itemsList.Count == 5); // Should use corrected size or return all if less
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts returns an empty result when the database has no products.
+    /// </summary>
     [TestMethod]
-    public async Task GetPagedProducts_EmptyDatabase_ReturnsEmptyResult()
+    public async Task ProductService_GetPagedProducts_EmptyDatabase_ReturnsEmptyResult()
     {
         // Arrange
         var options = new DbContextOptionsBuilder<EShopDbContext>()
@@ -326,8 +391,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(0, totalPages);
     }
 
+    /// <summary>
+    /// Verifies that GetPagedProducts returns products sorted by creation date (newest first).
+    /// </summary>
     [TestMethod]
-    public async Task GetPagedProducts_OrderedByCreatedAtDescending()
+    public async Task ProductService_GetPagedProducts_OrderedByCreatedAtDescending()
     {
         // Act
         var (items, _, _) = await _productService.GetPagedProductsAsync(1, 10);
@@ -340,8 +408,11 @@ public class ProductServiceIntegrationTests
         }
     }
 
+    /// <summary>
+    /// Verifies that creating a product and updating its stock works correctly end-to-end.
+    /// </summary>
     [TestMethod]
-    public async Task CompleteWorkflow_CreateAndUpdate_WorksCorrectly()
+    public async Task ProductService_CompleteWorkflow_CreateAndUpdate_WorksCorrectly()
     {
         // Create
         var product = await _productService.CreateProductAsync("Workflow Product", "https://example.com/workflow.jpg");
@@ -358,8 +429,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(50, retrieved.Quantity);
     }
 
+    /// <summary>
+    /// Verifies that multiple stock updates on the same product maintain data consistency.
+    /// </summary>
     [TestMethod]
-    public async Task CompleteWorkflow_MultipleStockUpdates_MaintainsConsistency()
+    public async Task ProductService_CompleteWorkflow_MultipleStockUpdates_MaintainsConsistency()
     {
         // Arrange
         var product = await _productService.CreateProductAsync("Stock Test", "https://example.com/stock.jpg");
@@ -374,8 +448,11 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(30, final!.Quantity);
     }
 
+    /// <summary>
+    /// Verifies that pagination works correctly with a larger dataset across multiple pages.
+    /// </summary>
     [TestMethod]
-    public async Task PaginationAndFiltering_WorkTogether()
+    public async Task ProductService_PaginationAndFiltering_WorkTogether()
     {
         // Arrange - Create products with specific pattern
         for (int i = 1; i <= 25; i++)
@@ -396,6 +473,9 @@ public class ProductServiceIntegrationTests
         Assert.AreEqual(3, totalPages);
     }
 
+    /// <summary>
+    /// Seeds the test database with 5 sample products for testing purposes.
+    /// </summary>
     private void SeedTestData()
     {
         var products = new[]
