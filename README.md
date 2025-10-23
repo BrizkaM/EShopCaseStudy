@@ -53,7 +53,7 @@ Tests folder:
 ### 1. Clone the repository
 ```bash
 git clone 
-cd EShopProject
+cd EShopCaseStudy
 ```
 
 ### 2. Restore dependencies
@@ -63,7 +63,7 @@ dotnet restore
 
 ### 3. Run database migrations
 ```bash
-cd EShopProject.WebApi
+cd EShopProject.EShopDB
 dotnet ef database update
 ```
 
