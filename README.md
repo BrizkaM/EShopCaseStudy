@@ -60,7 +60,7 @@ Tests folder:
 
 ### 1. Clone the repository
 ```bash
-git clone 
+git clone https://github.com/BrizkaM/EShopCaseStudy.git
 cd EShopCaseStudy
 ```
 
