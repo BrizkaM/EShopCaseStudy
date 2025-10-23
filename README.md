@@ -34,6 +34,14 @@ REST API service for managing e-shop products.
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - Prefered IDE Visual Studio 2022 - but any IDE can be used (VS Code, Rider)
 
+## Recommended quick steps
+
+- Open solution EshopProject in Visual Studio 2022
+- Build solution
+- run tests in Test Explorer
+- set-up EShopProject.WebApi as Startup project
+- run https (database auto-created, swagger UI should be opened)
+
 ## Project Structure
 
 ```
