@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.WebApi", "Esho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.WeApiIntegrationTest", "EShopProject.WeApiIntegrationTests\EShopProject.WeApiIntegrationTest.csproj", "{1A9FF70D-3508-4D82-B8DB-3BA04733F154}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.MessageQueue", "EShopProject.MessageQueue\EShopProject.MessageQueue.csproj", "{438AA2C0-53D4-4AED-B258-8BAD9A0CCBDB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,9 +49,17 @@ Global
 		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{438AA2C0-53D4-4AED-B258-8BAD9A0CCBDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{438AA2C0-53D4-4AED-B258-8BAD9A0CCBDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{438AA2C0-53D4-4AED-B258-8BAD9A0CCBDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{438AA2C0-53D4-4AED-B258-8BAD9A0CCBDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8155384F-9DA3-4997-81BE-17AE07969E4D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{1A9FF70D-3508-4D82-B8DB-3BA04733F154} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F1777BCA-3277-4462-AAA3-6E45633D0B23}

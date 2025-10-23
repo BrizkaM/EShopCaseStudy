@@ -1,4 +1,6 @@
 ﻿using EShopProject.Entities.Entities;
+using EShopProject.MessageQueue;
+using EShopProject.MessageQueue.Interfaces;
 using EShopProject.Services;
 using EShopProject.Services.Interfaces;
 using EShopProject.Services.ServiceInputs;
@@ -19,13 +21,16 @@ namespace EShopProject.WebApi.Controllers.V2;
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
+    private readonly IStockUpdateQueue _stockUpdateQueue;
     private readonly ILogger<ProductsController> _logger;
 
     public ProductsController(
         IProductService productService,
+        IStockUpdateQueue stockUpdateQueue,
         ILogger<ProductsController> logger)
     {
         _productService = productService;
+        _stockUpdateQueue = stockUpdateQueue;
         _logger = logger;
     }
 
@@ -103,13 +108,50 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
+    /// Update product stock (V2 - asynchronous processing via queue)
+    /// The request is queued and processed by a background service
     /// </summary>
     [HttpPatch("{id}/stock")]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status202Accepted)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ApiResponse<object>>> UpdateProductStock(int id, [FromBody] UpdateProductStockServiceInput updateDto)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation("PATCH /api/v2/products/{Id}/stock (async queue)", id);
+
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse<object>.ErrorResponse("Invalid input", errors));
+        }
+
+        try
+        {
+            var request = new StockUpdateRequest
+            {
+                ProductId = id,
+                Quantity = updateDto.Quantity
+            };
+
+            await _stockUpdateQueue.EnqueueAsync(request);
+
+            _logger.LogInformation("Stock update queued - ProductId: {ProductId}, Queue size: {QueueSize}", id, _stockUpdateQueue.Count);
+
+            return Accepted(ApiResponse<object>.SuccessResponse(
+                new
+                {
+                    productId = id,
+                    quantity = updateDto.Quantity,
+                    status = "queued",
+                    queuePosition = _stockUpdateQueue.Count,
+                    message = "Stock update will be processed asynchronously within a few seconds"
+                },
+                "Stock update request accepted and queued for processing"));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error queueing stock update");
+            return BadRequest(ApiResponse<object>.ErrorResponse("Failed to queue stock update"));
+        }
     }
 
     private static ProductDto MapToDto(Product product) => new()
