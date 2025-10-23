@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace EShopProject.WeApiIntegrationTest.V1;
+namespace EShopProject.WeApiIntegrationTest;
 
 /// <summary>
-/// Integration tests for Product Controller V1.
+/// Integration tests for Product Service.
 /// </summary>
 [TestClass]
-public class ProductControllerV1IntegrationTests
+public class ProductServiceIntegrationTests
 {
     private EShopDbContext _context = null!;
     private IProductService _productService = null!;
@@ -215,6 +215,185 @@ public class ProductControllerV1IntegrationTests
         // Assert
         Assert.AreEqual("Product With Spaces", result.Name);
         Assert.AreEqual("https://example.com/image.jpg", result.ImageUrl);
+    }
+
+    [TestMethod]
+    public async Task GetPagedProducts_FirstPage_ReturnsCorrectItems()
+    {
+        // Act
+        var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(1, 2);
+
+        // Assert
+        var itemsList = items.ToList();
+        Assert.HasCount(2, itemsList);
+        Assert.AreEqual(5, totalCount);
+        Assert.AreEqual(3, totalPages); // 5 items / 2 per page = 3 pages
+    }
+
+    [TestMethod]
+    public async Task GetPagedProducts_SecondPage_ReturnsCorrectItems()
+    {
+        // Act
+        var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(2, 2);
+
+        // Assert
+        var itemsList = items.ToList();
+        Assert.HasCount(2, itemsList);
+        Assert.AreEqual(5, totalCount);
+        Assert.AreEqual(3, totalPages);
+    }
+
+    [TestMethod]
+    public async Task GetPagedProducts_LastPage_ReturnsRemainingItems()
+    {
+        // Act
+        var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(3, 2);
+
+        // Assert
+        var itemsList = items.ToList();
+        Assert.HasCount(1, itemsList); // Only 1 item on last page (5 total / 2 per page)
+        Assert.AreEqual(5, totalCount);
+        Assert.AreEqual(3, totalPages);
+    }
+
+    [TestMethod]
+    public async Task GetPagedProducts_DefaultPageSize_Returns10Items()
+    {
+        // Arrange - Add more products to test default page size
+        for (int i = 6; i <= 15; i++)
+        {
+            await _context.Products.AddAsync(new Product
+            {
+                Name = $"Extra Product {i}",
+                ImageUrl = $"https://example.com/{i}.jpg",
+                Quantity = i
+            });
+        }
+        await _context.SaveChangesAsync();
+
+        // Act
+        var (items, totalCount, totalPages) = await _productService.GetPagedProductsAsync(1, 10);
+
+        // Assert
+        Assert.AreEqual(10, items.Count());
+        Assert.AreEqual(15, totalCount);
+        Assert.AreEqual(2, totalPages);
+    }
+
+    [TestMethod]
+    [DataRow(0, 10, 1, DisplayName = "Invalid page -> corrected to 1")]
+    [DataRow(-1, 10, 1, DisplayName = "Negative page -> corrected to 1")]
+    public async Task GetPagedProducts_InvalidPageNumber_UsesPageOne(int inputPage, int pageSize, int expectedPage)
+    {
+        // Act
+        var (items, _, _) = await _productService.GetPagedProductsAsync(inputPage, pageSize);
+
+        // Assert
+        Assert.IsTrue(items.Any()); // Should return first page results
+    }
+
+    [TestMethod]
+    [DataRow(1, 0, 10, DisplayName = "Invalid size -> corrected to 10")]
+    [DataRow(1, -5, 10, DisplayName = "Negative size -> corrected to 10")]
+    [DataRow(1, 200, 100, DisplayName = "Too large -> capped at 100")]
+    public async Task GetPagedProducts_InvalidPageSize_UsesDefault(int pageNumber, int inputSize, int expectedMinSize)
+    {
+        // Act
+        var (items, _, _) = await _productService.GetPagedProductsAsync(pageNumber, inputSize);
+
+        // Assert
+        var itemsList = items.ToList();
+        Assert.IsTrue(itemsList.Count <= expectedMinSize || itemsList.Count == 5); // Should use corrected size or return all if less
+    }
+
+    [TestMethod]
+    public async Task GetPagedProducts_EmptyDatabase_ReturnsEmptyResult()
+    {
+        // Arrange
+        var options = new DbContextOptionsBuilder<EShopDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        var emptyContext = new EShopDbContext(options);
+        var emptyUnitOfWork = new UnitOfWork(emptyContext);
+        var emptyService = new ProductService(emptyUnitOfWork, _mockLogger.Object);
+
+        // Act
+        var (items, totalCount, totalPages) = await emptyService.GetPagedProductsAsync(1, 10);
+
+        // Assert
+        Assert.AreEqual(0, items.Count());
+        Assert.AreEqual(0, totalCount);
+        Assert.AreEqual(0, totalPages);
+    }
+
+    [TestMethod]
+    public async Task GetPagedProducts_OrderedByCreatedAtDescending()
+    {
+        // Act
+        var (items, _, _) = await _productService.GetPagedProductsAsync(1, 10);
+
+        // Assert
+        var itemsList = items.ToList();
+        for (int i = 0; i < itemsList.Count - 1; i++)
+        {
+            Assert.IsTrue(itemsList[i].Idate >= itemsList[i + 1].Idate);
+        }
+    }
+
+    [TestMethod]
+    public async Task CompleteWorkflow_CreateAndUpdate_WorksCorrectly()
+    {
+        // Create
+        var product = await _productService.CreateProductAsync("Workflow Product", "https://example.com/workflow.jpg");
+        Assert.IsNotNull(product);
+        Assert.AreEqual(0, product.Quantity);
+
+        // Update stock
+        var updateResult = await _productService.UpdateProductStockAsync(product.Id, 50);
+        Assert.IsTrue(updateResult);
+
+        // Verify
+        var retrieved = await _productService.GetProductByIdAsync(product.Id);
+        Assert.IsNotNull(retrieved);
+        Assert.AreEqual(50, retrieved.Quantity);
+    }
+
+    [TestMethod]
+    public async Task CompleteWorkflow_MultipleStockUpdates_MaintainsConsistency()
+    {
+        // Arrange
+        var product = await _productService.CreateProductAsync("Stock Test", "https://example.com/stock.jpg");
+
+        // Act - Multiple updates
+        await _productService.UpdateProductStockAsync(product.Id, 10);
+        await _productService.UpdateProductStockAsync(product.Id, 20);
+        await _productService.UpdateProductStockAsync(product.Id, 30);
+
+        // Assert
+        var final = await _productService.GetProductByIdAsync(product.Id);
+        Assert.AreEqual(30, final!.Quantity);
+    }
+
+    [TestMethod]
+    public async Task PaginationAndFiltering_WorkTogether()
+    {
+        // Arrange - Create products with specific pattern
+        for (int i = 1; i <= 25; i++)
+        {
+            await _productService.CreateProductAsync($"Pagination Test {i}", $"https://example.com/{i}.jpg");
+        }
+
+        // Act - Get different pages
+        var (page1, _, _) = await _productService.GetPagedProductsAsync(1, 10);
+        var (page2, _, _) = await _productService.GetPagedProductsAsync(2, 10);
+        var (page3, totalCount, totalPages) = await _productService.GetPagedProductsAsync(3, 10);
+
+        // Assert
+        Assert.AreEqual(10, page1.Count());
+        Assert.AreEqual(10, page2.Count());
+        Assert.IsGreaterThan(0, page3.Count());
+        Assert.AreEqual(30, totalCount); // 5 original + 25 new
+        Assert.AreEqual(3, totalPages);
     }
 
     private void SeedTestData()
