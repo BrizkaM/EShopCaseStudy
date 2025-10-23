@@ -1,5 +1,5 @@
-﻿using EShopProject.Entities.Entities;
-using EShopProject.Entities.Interfaces;
+﻿using EShopProject.Core.Entities;
+using EShopProject.Core.Interfaces;
 using EShopProject.EShopDB.Data;
 using Microsoft.EntityFrameworkCore;
 

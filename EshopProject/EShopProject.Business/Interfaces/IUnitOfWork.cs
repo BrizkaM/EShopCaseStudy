@@ -1,4 +1,4 @@
-﻿namespace EShopProject.Entities.Interfaces;
+﻿namespace EShopProject.Core.Interfaces;
 
 /// <summary>
 /// Unit of Work pattern for managing database transactions

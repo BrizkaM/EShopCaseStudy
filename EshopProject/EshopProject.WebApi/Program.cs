@@ -1,5 +1,5 @@
 using EShopApi.WebApi.Handlers;
-using EShopProject.Entities.Interfaces;
+using EShopProject.Core.Interfaces;
 using EShopProject.EShopDB.Data;
 using EShopProject.EShopDB.Repositories;
 using EShopProject.MessageQueue;

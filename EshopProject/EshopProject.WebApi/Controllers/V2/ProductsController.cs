@@ -1,4 +1,4 @@
-﻿using EShopProject.Entities.Entities;
+﻿using EShopProject.Core.Entities;
 using EShopProject.MessageQueue;
 using EShopProject.MessageQueue.Interfaces;
 using EShopProject.Services;

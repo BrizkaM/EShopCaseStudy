@@ -5,7 +5,7 @@ VisualStudioVersion = 17.14.36603.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.EShopDB", "EShopProject.EShopDB\EShopProject.EShopDB.csproj", "{E630F193-72F6-4CBD-8492-D47F82E5E6E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.Entities", "EShopProject.Business\EShopProject.Entities.csproj", "{BB873E10-EDA2-4F0E-AB2F-B225CF8A1FBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.Core", "EShopProject.Business\EShopProject.Core.csproj", "{BB873E10-EDA2-4F0E-AB2F-B225CF8A1FBD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.Services", "EShopProject.Services\EShopProject.Services.csproj", "{1F5F48B9-D131-6C39-96BD-16E68A0B05A5}"
 EndProject

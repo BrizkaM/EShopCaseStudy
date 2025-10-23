@@ -1,6 +1,6 @@
-﻿using EShopProject.Entities.Entities;
+﻿using EShopProject.Core.Entities;
 
-namespace EShopProject.Entities.Interfaces;
+namespace EShopProject.Core.Interfaces;
 
 /// <summary>
 /// Repository interface for Product entity operations

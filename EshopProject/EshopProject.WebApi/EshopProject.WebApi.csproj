@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EShopProject.Business\EShopProject.Entities.csproj" />
+    <ProjectReference Include="..\EShopProject.Business\EShopProject.Core.csproj" />
     <ProjectReference Include="..\EShopProject.EShopDB\EShopProject.EShopDB.csproj" />
     <ProjectReference Include="..\EShopProject.MessageQueue\EShopProject.MessageQueue.csproj" />
     <ProjectReference Include="..\EShopProject.Services\EShopProject.Services.csproj" />

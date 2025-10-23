@@ -1,4 +1,4 @@
-﻿using EShopProject.Entities.Entities;
+﻿using EShopProject.Core.Entities;
 
 namespace EShopProject.Services.Interfaces;
 

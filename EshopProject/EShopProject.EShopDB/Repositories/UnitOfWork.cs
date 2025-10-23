@@ -1,4 +1,4 @@
-﻿using EShopProject.Entities.Interfaces;
+﻿using EShopProject.Core.Interfaces;
 using EShopProject.EShopDB.Data;
 
 using Microsoft.EntityFrameworkCore.Storage;
