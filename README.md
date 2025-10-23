@@ -77,7 +77,7 @@ dotnet ef database update
 
 ### 4. Run the application
 ```bash
-dotnet run --project EShopApi.WebApi
+dotnet run --project EShopProject.WebApi
 ```
 
 The API will be available at:
