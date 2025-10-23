@@ -13,7 +13,8 @@ namespace EShopProject.WebApi.Controllers.V2;
 /// Stock updates are processed asynchronously via queue
 /// </summary>
 [ApiController]
-[Route("api/v2/products")]
+[ApiVersion("2.0")]
+[Route("api/v{version:apiVersion}/products")]
 [Produces("application/json")]
 public class ProductsController : ControllerBase
 {

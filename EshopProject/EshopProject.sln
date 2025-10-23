@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.WebApiTest", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.WebApi", "EshopProject.WebApi\EShopProject.WebApi.csproj", "{2CD1790E-27EC-ACC2-2655-8E153B45FCE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShopProject.WeApiIntegrationTest", "EShopProject.WeApiIntegrationTests\EShopProject.WeApiIntegrationTest.csproj", "{1A9FF70D-3508-4D82-B8DB-3BA04733F154}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2CD1790E-27EC-ACC2-2655-8E153B45FCE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CD1790E-27EC-ACC2-2655-8E153B45FCE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CD1790E-27EC-ACC2-2655-8E153B45FCE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A9FF70D-3508-4D82-B8DB-3BA04733F154}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
