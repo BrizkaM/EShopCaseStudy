@@ -1,6 +1,9 @@
+using EShopApi.WebApi.Handlers;
 using EShopProject.Entities.Interfaces;
 using EShopProject.EShopDB.Data;
 using EShopProject.EShopDB.Repositories;
+using EShopProject.MessageQueue;
+using EShopProject.MessageQueue.Interfaces;
 using EShopProject.Services;
 using EShopProject.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +29,11 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Application services
 builder.Services.AddScoped<IProductService, ProductService>();
+
+// Inmemory Queue
+builder.Services.AddSingleton<IStockUpdateQueue, InMemoryStockUpdateQueue>();
+builder.Services.AddScoped<IStockUpdateHandler, StockUpdateHandler>();
+builder.Services.AddHostedService<StockUpdateQueueProcessor>();
 
 // API Versioning
 builder.Services.AddApiVersioning(options =>
