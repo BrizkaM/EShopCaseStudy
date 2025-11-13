@@ -3,10 +3,10 @@
 //------------------------------------------------------------------------------------------
 using EShopProject.Core.Interfaces;
 using EShopProject.EShopDB.Data;
-
+using EShopProject.EShopDB.Repositories;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace EShopProject.EShopDB.Repositories;
+namespace EShopProject.EShopDB;
 
 /// <summary>
 /// Unit of Work implementation for managing database transactions

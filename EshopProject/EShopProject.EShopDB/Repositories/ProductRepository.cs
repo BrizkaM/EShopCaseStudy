@@ -69,30 +69,6 @@ public class ProductRepository : IProductRepository
     }
 
     /// <summary>
-    /// Deletes a product from the database
-    /// </summary>
-    /// <param name="id">The identifier of the product to delete</param>
-    /// <returns>A task representing the asynchronous operation</returns>
-    public async Task DeleteAsync(int id)
-    {
-        var product = await _context.Products.FindAsync(id);
-        if (product != null)
-        {
-            _context.Products.Remove(product);
-        }
-    }
-
-    /// <summary>
-    /// Checks if a product exists in the database
-    /// </summary>
-    /// <param name="id">The product identifier to check</param>
-    /// <returns>True if the product exists; otherwise, false</returns>
-    public async Task<bool> ExistsAsync(int id)
-    {
-        return await _context.Products.AnyAsync(p => p.Id == id);
-    }
-
-    /// <summary>
     /// Retrieves a paginated list of products ordered by insertion date descending
     /// </summary>
     /// <param name="pageNumber">The page number to retrieve (1-based)</param>

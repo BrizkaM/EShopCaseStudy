@@ -3,11 +3,14 @@
 //------------------------------------------------------------------------------------------
 using EShopApi.WebApi.Handlers;
 using EShopProject.Core.Interfaces;
+using EShopProject.EShopDB;
 using EShopProject.EShopDB.Data;
 using EShopProject.EShopDB.Repositories;
 using EShopProject.MessageQueue;
 using EShopProject.MessageQueue.Interfaces;
+using EShopProject.Services;
 using EShopProject.Services.Interfaces;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -152,6 +155,37 @@ if (app.Environment.IsDevelopment())
         options.DisplayRequestDuration();
     });
 }
+
+// Exception handling middleware
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+        var exception = exceptionHandlerFeature?.Error;
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+
+        logger.LogError(exception, "Unhandled exception");
+
+        var response = new ApiResponse<object>
+        {
+            Success = false,
+            Message = "An error occurred while processing your request",
+            Errors = new List<string> { exception?.Message ?? "Unknown error" }
+        };
+
+        context.Response.StatusCode = exception switch
+        {
+            ArgumentException => StatusCodes.Status400BadRequest,
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            // Add more exception types as needed
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsJsonAsync(response);
+    });
+});
 
 app.UseHttpsRedirection();
 

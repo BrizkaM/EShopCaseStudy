@@ -66,51 +66,6 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Get product by ID
-    /// </summary>
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<ProductDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<ProductDto>), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ApiResponse<ProductDto>>> GetProductById(int id)
-    {
-        _logger.LogInformation("GET /api/v2/products/{Id}", id);
-        var product = await _productService.GetProductByIdAsync(id);
-
-        if (product == null)
-            return NotFound(ApiResponse<ProductDto>.ErrorResponse($"Product with ID {id} not found"));
-
-        return Ok(ApiResponse<ProductDto>.SuccessResponse(MapToDto(product), "Product retrieved successfully"));
-    }
-
-    /// <summary>
-    /// Create new product
-    /// </summary>
-    [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<ProductDto>), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ApiResponse<ProductDto>), StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ApiResponse<ProductDto>>> CreateProduct([FromBody] CreateProductServiceInput createDto)
-    {
-        _logger.LogInformation("POST /api/v2/products");
-
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return BadRequest(ApiResponse<ProductDto>.ErrorResponse("Invalid input", errors));
-        }
-
-        try
-        {
-            var product = await _productService.CreateProductAsync(createDto.Name, createDto.ImageUrl);
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id },
-                ApiResponse<ProductDto>.SuccessResponse(MapToDto(product), "Product created successfully"));
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponse<ProductDto>.ErrorResponse(ex.Message));
-        }
-    }
-
-    /// <summary>
     /// Update product stock (V2 - asynchronous processing via queue)
     /// The request is queued and processed by a background service
     /// </summary>

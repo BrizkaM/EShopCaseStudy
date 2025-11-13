@@ -166,77 +166,6 @@ public class ProductRepositoryTests
     }
 
     /// <summary>
-    /// Test: DeleteAsync removes a product from the database
-    /// Verifies that repository can delete products by ID
-    /// </summary>
-    [TestMethod]
-    public async Task ProductRepository_DeleteAsync_RemovesProduct()
-    {
-        // Arrange
-        var product = new Product { Name = "To Delete", ImageUrl = "url", Quantity = 5 };
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
-        var productId = product.Id;
-
-        // Act
-        await _repository.DeleteAsync(productId);
-        await _context.SaveChangesAsync();
-
-        // Assert
-        var deletedProduct = await _context.Products.FindAsync(productId);
-        Assert.IsNull(deletedProduct);
-    }
-
-    /// <summary>
-    /// Test: DeleteAsync with non-existing ID does not throw exception
-    /// Verifies that repository handles deletion of missing products gracefully
-    /// </summary>
-    [TestMethod]
-    public async Task ProductRepository_DeleteAsync_NonExistingId_DoesNotThrowException()
-    {
-        // Act & Assert - Should not throw
-        await _repository.DeleteAsync(999);
-        await _context.SaveChangesAsync();
-
-        // Verify no products in database
-        var count = await _context.Products.CountAsync();
-        Assert.AreEqual(0, count);
-    }
-
-    /// <summary>
-    /// Test: ExistsAsync returns true for existing product
-    /// Verifies that repository can check product existence
-    /// </summary>
-    [TestMethod]
-    public async Task ProductRepository_ExistsAsync_ExistingProduct_ReturnsTrue()
-    {
-        // Arrange
-        var product = new Product { Name = "Exists", ImageUrl = "url" };
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _repository.ExistsAsync(product.Id);
-
-        // Assert
-        Assert.IsTrue(result);
-    }
-
-    /// <summary>
-    /// Test: ExistsAsync returns false for non-existing product
-    /// Verifies that repository correctly reports missing products
-    /// </summary>
-    [TestMethod]
-    public async Task ProductRepository_ExistsAsync_NonExistingProduct_ReturnsFalse()
-    {
-        // Act
-        var result = await _repository.ExistsAsync(999);
-
-        // Assert
-        Assert.IsFalse(result);
-    }
-
-    /// <summary>
     /// Test: GetPagedAsync returns correct page of products
     /// Verifies pagination logic with correct item count and total
     /// </summary>
@@ -420,41 +349,5 @@ public class ProductRepositoryTests
         // Assert
         Assert.AreEqual(0, items.Count());
         Assert.AreEqual(0, totalCount);
-    }
-
-    /// <summary>
-    /// Test: Multiple operations in sequence work correctly
-    /// Verifies that repository maintains consistency across multiple operations
-    /// </summary>
-    [TestMethod]
-    public async Task ProductRepository_MultipleOperations_MaintainConsistency()
-    {
-        // Arrange & Act
-        // Add
-        var product = new Product { Name = "Test", ImageUrl = "url", Quantity = 10 };
-        await _repository.AddAsync(product);
-        await _context.SaveChangesAsync();
-
-        // Update
-        product.Quantity = 20;
-        await _repository.UpdateAsync(product);
-        await _context.SaveChangesAsync();
-
-        // Verify exists
-        var exists = await _repository.ExistsAsync(product.Id);
-        Assert.IsTrue(exists);
-
-        // Get
-        var retrieved = await _repository.GetByIdAsync(product.Id);
-        Assert.IsNotNull(retrieved);
-        Assert.AreEqual(20, retrieved.Quantity);
-
-        // Delete
-        await _repository.DeleteAsync(product.Id);
-        await _context.SaveChangesAsync();
-
-        // Verify deleted
-        var deletedProduct = await _repository.GetByIdAsync(product.Id);
-        Assert.IsNull(deletedProduct);
     }
 }

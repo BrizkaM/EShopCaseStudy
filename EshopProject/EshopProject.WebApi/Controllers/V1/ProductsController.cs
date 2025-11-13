@@ -92,16 +92,9 @@ public class ProductsController : ControllerBase
             return BadRequest(ApiResponse<ProductDto>.ErrorResponse("Invalid input", errors));
         }
 
-        try
-        {
-            var product = await _productService.CreateProductAsync(createDto.Name, createDto.ImageUrl);
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id },
-                ApiResponse<ProductDto>.SuccessResponse(MapToDto(product)));
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponse<ProductDto>.ErrorResponse(ex.Message));
-        }
+        var product = await _productService.CreateProductAsync(createDto.Name, createDto.ImageUrl);
+        return CreatedAtAction(nameof(GetProductById), new { id = product.Id },
+            ApiResponse<ProductDto>.SuccessResponse(MapToDto(product)));
     }
 
     /// <summary>
@@ -129,18 +122,11 @@ public class ProductsController : ControllerBase
             return BadRequest(ApiResponse<object>.ErrorResponse("Invalid input", errors));
         }
 
-        try
-        {
-            var success = await _productService.UpdateProductStockAsync(id, updateDto.Quantity);
-            if (!success)
-                return NotFound(ApiResponse<object>.ErrorResponse($"Product with ID {id} not found"));
+        var success = await _productService.UpdateProductStockAsync(id, updateDto.Quantity);
+        if (!success)
+            return NotFound(ApiResponse<object>.ErrorResponse($"Product with ID {id} not found"));
 
-            return Ok(ApiResponse<object>.SuccessResponse(new { productId = id, quantity = updateDto.Quantity }));
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(ApiResponse<object>.ErrorResponse(ex.Message));
-        }
+        return Ok(ApiResponse<object>.SuccessResponse(new { productId = id, quantity = updateDto.Quantity }));
     }
 
     // IDate, UDate properties skipped as they are DB info only
